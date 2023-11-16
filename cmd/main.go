@@ -12,20 +12,6 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func initTable(ctx context.Context, tx pgx.Tx) error {
-	log.Println("Drop existing users table if necessary.")
-	if _, err := tx.Exec(ctx, "DROP TABLE IF EXISTS users"); err != nil {
-		return err
-	}
-
-	log.Println("Creating users table.")
-	if _, err := tx.Exec(ctx,
-		"CREATE TABLE users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), userName varchar, password varchar)"); err != nil {
-		return err
-	}
-	return nil
-}
-
 func main() {
 	// Read in connection string
 	config, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
@@ -40,7 +26,7 @@ func main() {
 	defer conn.Close(context.Background())
 
 	err = crdbpgx.ExecuteTx(context.Background(), conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		return initTable(context.Background(), tx)
+		return persistence.InitRepository(context.Background(), tx)
 	})
 	cockroachRepository := persistence.New(conn)
 	userHandlers := handlers.NewUserHandlers(cockroachRepository)

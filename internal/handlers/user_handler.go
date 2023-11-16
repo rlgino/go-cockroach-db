@@ -4,13 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"go-cockroach/internal/core/user"
 	"go-cockroach/internal/persistence"
 	"log"
 	"net/http"
 )
 
 type UserHandlers struct {
-	repo *persistence.CockroachRepository
+	repo    *persistence.CockroachRepository
+	creator user.Creator
+	deleter user.Deleter
+	lister  user.Lister
 }
 
 func NewUserHandlers(repo *persistence.CockroachRepository) UserHandlers {
@@ -33,7 +37,7 @@ func (handler *UserHandlers) Handle(res http.ResponseWriter, req *http.Request) 
 }
 
 func (handler *UserHandlers) deleteUser(res http.ResponseWriter, req *http.Request) {
-	var userToDelete persistence.User
+	var userToDelete user.Data
 	err := json.NewDecoder(req.Body).Decode(&userToDelete)
 	if err != nil {
 		writeInternalError(res, "Invalid request", err)
@@ -48,7 +52,7 @@ func (handler *UserHandlers) deleteUser(res http.ResponseWriter, req *http.Reque
 }
 
 func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Request) {
-	var userToCreate persistence.User
+	var userToCreate user.Data
 	err := json.NewDecoder(req.Body).Decode(&userToCreate)
 	if err != nil {
 		writeInternalError(res, "Invalid request", err)
@@ -79,7 +83,7 @@ func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Reque
 func (handler *UserHandlers) listUsers(res http.ResponseWriter, req *http.Request) {
 	users, err := handler.repo.ListUsers(req.Context())
 	if err != nil {
-		writeInternalError(res, "error listing users", err)
+		writeInternalError(res, "error listing user", err)
 		return
 	}
 	writeSuccess(res, users)
