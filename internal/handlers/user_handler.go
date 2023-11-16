@@ -11,15 +11,12 @@ import (
 )
 
 type UserHandlers struct {
-	repo    *persistence.CockroachRepository
-	creator user.Creator
-	deleter user.Deleter
-	lister  user.Lister
+	actions user.Actions
 }
 
 func NewUserHandlers(repo *persistence.CockroachRepository) UserHandlers {
 	return UserHandlers{
-		repo: repo,
+		user.NewActions(repo),
 	}
 }
 
@@ -43,7 +40,7 @@ func (handler *UserHandlers) deleteUser(res http.ResponseWriter, req *http.Reque
 		writeInternalError(res, "Invalid request", err)
 		return
 	}
-	err = handler.repo.DeleteUser(req.Context(), userToDelete.ID)
+	err = handler.actions.DeleteUser(req.Context(), userToDelete.ID)
 	if err != nil {
 		writeInternalError(res, "error deleting user", err)
 		return
@@ -71,7 +68,7 @@ func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Reque
 		writeInternalError(res, "Error creating UUID", err)
 		return
 	}
-	err = handler.repo.SaveUser(req.Context(), userToCreate)
+	err = handler.actions.CreateUser(req.Context(), userToCreate)
 	if err != nil {
 		writeInternalError(res, "error creating user", err)
 		return
@@ -81,7 +78,7 @@ func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Reque
 }
 
 func (handler *UserHandlers) listUsers(res http.ResponseWriter, req *http.Request) {
-	users, err := handler.repo.ListUsers(req.Context())
+	users, err := handler.actions.ListUsers(req.Context())
 	if err != nil {
 		writeInternalError(res, "error listing user", err)
 		return
@@ -116,9 +113,11 @@ func writeBadRequest(res http.ResponseWriter, msg string) {
 }
 
 func writeInternalError(res http.ResponseWriter, msg string, err error) {
-	_, errWriting := res.Write([]byte(fmt.Sprintf(msg+": %s", err)))
+	res.WriteHeader(http.StatusInternalServerError)
+	errMsg := fmt.Sprintf(msg+": %s", err.Error())
+	log.Println(errMsg)
+	_, errWriting := res.Write([]byte(errMsg))
 	if errWriting != nil {
 		log.Println(errWriting)
 	}
-	res.WriteHeader(http.StatusInternalServerError)
 }
