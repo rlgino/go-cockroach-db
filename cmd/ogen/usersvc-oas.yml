@@ -1,0 +1,71 @@
+openapi: 3.0.2
+servers:
+  - url: /v3
+info:
+  version: 1.0.0
+  title: User store schema
+tags:
+  - name: user
+    description: Everything about your Users
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Add a new user to the store
+      description: Add a new user to the store
+      operationId: addUser
+      responses:
+        '201':
+          description: Successful operation
+        default:
+          description: ADJHKBKYUGFDSABHKGJYGHFSalJHGFBSDAUIL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      requestBody:
+        description: Create a new user in the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    User:
+      required:
+        - id
+        - name
+        - password
+      properties:
+        id:
+          type: string
+          example: doggie
+        name:
+          type: string
+          example: doggie
+        password:
+          type: string
+          example: mySecretPassword
+      type: object
+    Error:
+      description: Represents error object
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+      required:
+        - code
+        - message
+  requestBodies:
+    User:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+      description: User object that needs to be added to the store
