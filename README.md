@@ -27,13 +27,16 @@ Handles the implementation of security measures, such as data encryption, fraud 
 
 ### About structure
 
+### Plain HTTP server
+For this entrypoint I used `http/net` package for serve HTTP requests, it's a simple way to develop an application in Golang. The `main.go` file is in `cmd/plain`.
+
 ### OpenAPI Generator
 One of the most often used open-source libraries for using an OAS file is OpenAPI Generator. The purpose of it is to produce documentation for OAS 2.0 and OAS 3.0 papers. These documents can be altered using options, unique templates, and unique generators on your classpath.
 This API documentation tool can automatically produce API documentation from source code. Java, Node.js, Python, PHP, Ruby, and NET are just a few of the many programming languages and frameworks it supports.
 For this integration with Go I'm using [Ogen](https://ogen.dev/) which I found simple and useful.
 
 #### How to use?
-Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then copy and paste my Swagger into the project and execute go gen ./... in the folder.
+Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then copy and paste my Swagger into the project and execute `go gen ./...` in the folder `cmd/ogen`.
 
 ## Requests
 ```shell
