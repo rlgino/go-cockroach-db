@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 	"github.com/jackc/pgx/v5"
-	"go-cockroach/internal/handlers"
+	"go-cockroach/cmd/plain/handlers"
 	"go-cockroach/internal/persistence"
 	"log"
 	"net/http"
