@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"go-cockroach/internal/core/user"
+	"go-users-service/internal/core/user"
 )
 
 type CockroachRepository struct {

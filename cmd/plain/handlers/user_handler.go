@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"go-cockroach/internal/core/user"
-	"go-cockroach/internal/persistence"
+	"go-users-service/internal/core/user"
+	"go-users-service/internal/persistence"
 	"log"
 	"net/http"
 )

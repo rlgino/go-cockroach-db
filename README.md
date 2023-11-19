@@ -45,7 +45,7 @@ Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then 
 
 ## Steps
 1. Create a minimum app
-2. Connect with Cockroach
+2. Connect with DB (In my case I'm using Cockroach DB with Postgres)
 3. Build a Docker image
 4. Create a GCP Account
 5. Enable GCR (google container registry) and upload image in it

@@ -1,4 +1,4 @@
-FROM golang:1.19 AS build-stage
+FROM golang:1.20 AS build-stage
 # Set destination for COPY
 WORKDIR /app
 # Download Go modules
@@ -8,7 +8,7 @@ RUN go mod download
 # https://docs.docker.com/engine/reference/builder/#copy
 COPY . ./
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go-cockroach-app
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go-users-service-app
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
 # But we can document in the Dockerfile what ports
@@ -19,10 +19,10 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /go-cockroach-app /go-cockroach-app
+COPY --from=build-stage /go-users-service-app /go-users-service-app
 
 EXPOSE 8080
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/go-cockroach-app"]
+ENTRYPOINT ["/go-users-service-app"]

@@ -1,4 +1,4 @@
-module go-cockroach
+module go-users-service
 
 go 1.20
 

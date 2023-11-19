@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: Users Service
   description: |-
-    This is a simple App for demostrating knowledge in API design skills
+    This is a simple App for demonstrating knowledge in API design skills
   contact:
     email: gino.luraschi@gmail.com
   license:
