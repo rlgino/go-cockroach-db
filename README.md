@@ -38,19 +38,6 @@ For this integration with Go I'm using [Ogen](https://ogen.dev/) which I found s
 #### How to use?
 Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then copy and paste my Swagger into the project and execute `go gen ./...` in the folder `cmd/ogen`.
 
-## Requests
-```shell
-# List user
-curl --location '{{server}}/user'
-# Create user
-curl --location '{{server}}/user' \
---header 'Content-Type: application/json' \
---data '{
-    "user": "Usuario1",
-    "password": "pwd1"
-}'
-```
-
 ## Build a docker image for m1 microchip
 ```shell
  docker buildx build --platform linux/amd64 -t <api-tag> .

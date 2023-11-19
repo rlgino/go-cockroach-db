@@ -13,7 +13,7 @@ externalDocs:
   description: My github portfolio
   url: https://github.com/rlgino/
 servers:
-  - url: https://localhost:8080/api/v1
+  - url: http://localhost:8080/api/v1
 tags:
   - name: user
     description: Everything about your Users
@@ -29,7 +29,7 @@ paths:
         '201':
           description: Successful operation
         default:
-          description: ADJHKBKYUGFDSABHKGJYGHFSalJHGFBSDAUIL
+          description: The default operation result will be an error
           content:
             application/json:
               schema:
@@ -42,8 +42,58 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
 
+  /user/{userID}:
+    delete:
+      tags:
+        - user
+      summary: Delete an user from storage
+      description: Delete an user from storage, if the user not exists the endpoint will return 500
+      operationId: deleteUser
+      parameters:
+        - name: userID
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+        default:
+          description: The default operation result will be an error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users:
+    get:
+      tags:
+        - user
+      summary: List stored users
+      description: List the already stored users
+      operationId: listUsers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: The default operation result will be an error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
     User:
       required:
         - id
@@ -52,10 +102,11 @@ components:
       properties:
         id:
           type: string
-          example: doggie
+          format: uuid
+          example: 95854717-f395-455e-b610-95bd85d9adb1
         name:
           type: string
-          example: doggie
+          example: test-user
         password:
           type: string
           example: mySecretPassword
@@ -66,6 +117,7 @@ components:
       properties:
         message:
           type: string
+          example: This is an clear error message
       required:
         - message
   requestBodies:
