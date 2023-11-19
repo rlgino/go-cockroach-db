@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	crdbpgx "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"go-cockroach/cmd/ogen/usersvcapi"
 	"go-cockroach/internal/core/user"
@@ -43,7 +42,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := http.ListenAndServe(":8080", srv); err != nil {
+	// Add prefix to the router
+	mux := http.NewServeMux()
+	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", srv))
+	log.Println("Running in port :8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -58,13 +61,32 @@ type userHandlers struct {
 	actions user.Actions
 }
 
-func (u userHandlers) AddUser(ctx context.Context, req *usersvcapi.User) error {
-	id, err := uuid.Parse(req.ID)
+func (u userHandlers) DeleteUser(ctx context.Context, params usersvcapi.DeleteUserParams) error {
+	err := u.actions.DeleteUser(ctx, params.UserID)
 	if err != nil {
 		return err
 	}
-	err = u.actions.CreateUser(ctx, user.Data{
-		ID:       id,
+	return nil
+}
+
+func (u userHandlers) ListUsers(ctx context.Context) (usersvcapi.Users, error) {
+	users, err := u.actions.ListUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var res = make(usersvcapi.Users, len(users))
+	for i, data := range users {
+		res[i] = usersvcapi.User{
+			ID:   data.ID,
+			Name: data.User,
+		}
+	}
+	return res, nil
+}
+
+func (u userHandlers) AddUser(ctx context.Context, req *usersvcapi.User) error {
+	err := u.actions.CreateUser(ctx, user.Data{
+		ID:       req.ID,
 		User:     req.Name,
 		Password: req.Password,
 	})
@@ -74,11 +96,10 @@ func (u userHandlers) AddUser(ctx context.Context, req *usersvcapi.User) error {
 	return nil
 }
 
-func (u userHandlers) NewError(ctx context.Context, err error) *usersvcapi.ErrorStatusCode {
+func (u userHandlers) NewError(_ context.Context, err error) *usersvcapi.ErrorStatusCode {
 	return &usersvcapi.ErrorStatusCode{
 		StatusCode: http.StatusInternalServerError,
 		Response: usersvcapi.Error{
-			Code:    123,
 			Message: err.Error(),
 		},
 	}

@@ -22,6 +22,24 @@ func (UnimplementedHandler) AddUser(ctx context.Context, req *User) error {
 	return ht.ErrNotImplemented
 }
 
+// DeleteUser implements deleteUser operation.
+//
+// Delete an user from storage, if the user not exists the endpoint will return 500.
+//
+// DELETE /user/{userID}
+func (UnimplementedHandler) DeleteUser(ctx context.Context, params DeleteUserParams) error {
+	return ht.ErrNotImplemented
+}
+
+// ListUsers implements listUsers operation.
+//
+// List the already stored users.
+//
+// GET /users
+func (UnimplementedHandler) ListUsers(ctx context.Context) (r Users, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorStatusCode from error returned by handler.
 //
 // Used for common default response.

@@ -4,6 +4,8 @@ package usersvcapi
 
 import (
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -13,26 +15,18 @@ func (s *ErrorStatusCode) Error() string {
 // AddUserCreated is response for AddUser operation.
 type AddUserCreated struct{}
 
+// DeleteUserOK is response for DeleteUser operation.
+type DeleteUserOK struct{}
+
 // Represents error object.
 // Ref: #/components/schemas/Error
 type Error struct {
-	Code    int64  `json:"code"`
 	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *Error) GetCode() int64 {
-	return s.Code
 }
 
 // GetMessage returns the value of Message.
 func (s *Error) GetMessage() string {
 	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *Error) SetCode(val int64) {
-	s.Code = val
 }
 
 // SetMessage sets the value of Message.
@@ -68,13 +62,13 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 
 // Ref: #/components/schemas/User
 type User struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Password string    `json:"password"`
 }
 
 // GetID returns the value of ID.
-func (s *User) GetID() string {
+func (s *User) GetID() uuid.UUID {
 	return s.ID
 }
 
@@ -89,7 +83,7 @@ func (s *User) GetPassword() string {
 }
 
 // SetID sets the value of ID.
-func (s *User) SetID(val string) {
+func (s *User) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -102,3 +96,5 @@ func (s *User) SetName(val string) {
 func (s *User) SetPassword(val string) {
 	s.Password = val
 }
+
+type Users []User

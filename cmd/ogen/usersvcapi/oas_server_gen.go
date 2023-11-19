@@ -14,6 +14,18 @@ type Handler interface {
 	//
 	// POST /user
 	AddUser(ctx context.Context, req *User) error
+	// DeleteUser implements deleteUser operation.
+	//
+	// Delete an user from storage, if the user not exists the endpoint will return 500.
+	//
+	// DELETE /user/{userID}
+	DeleteUser(ctx context.Context, params DeleteUserParams) error
+	// ListUsers implements listUsers operation.
+	//
+	// List the already stored users.
+	//
+	// GET /users
+	ListUsers(ctx context.Context) (Users, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.
