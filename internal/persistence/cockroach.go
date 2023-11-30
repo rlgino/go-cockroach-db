@@ -14,9 +14,17 @@ type CockroachRepository struct {
 }
 
 func New(conn *pgx.Conn) *CockroachRepository {
-	return &CockroachRepository{
+	repo := &CockroachRepository{
 		conn,
 	}
+	id := uuid.New()
+	log.Println("Using ID ", id)
+	repo.SaveUser(context.Background(), user.Data{
+		ID:       id,
+		User:     "test1",
+		Password: "prueba",
+	})
+	return repo
 }
 
 func InitRepository(ctx context.Context, tx pgx.Tx) error {

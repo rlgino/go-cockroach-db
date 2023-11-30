@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"go-users-service/internal/core/user"
-	"go-users-service/internal/persistence"
 	"log"
 	"net/http"
 )
@@ -14,7 +13,7 @@ type UserHandlers struct {
 	actions user.Actions
 }
 
-func NewUserHandlers(repo *persistence.CockroachRepository) UserHandlers {
+func NewUserHandlers(repo user.Repository) UserHandlers {
 	return UserHandlers{
 		user.NewActions(repo),
 	}

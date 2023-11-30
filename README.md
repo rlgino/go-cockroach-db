@@ -27,6 +27,10 @@ Handles the implementation of security measures, such as data encryption, fraud 
 
 ### About structure
 
+* Ports and adapters architecture:
+* Use cases (actions):
+* main and initialization: 
+
 ### Plain HTTP server
 For this entrypoint I used `http/net` package for serve HTTP requests, it's a simple way to develop an application in Golang. The `main.go` file is in `cmd/plain`.
 
@@ -37,6 +41,24 @@ For this integration with Go I'm using [Ogen](https://ogen.dev/) which I found s
 
 #### How to use?
 Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then copy and paste my Swagger into the project and execute `go gen ./...` in the folder `cmd/ogen`.
+
+### GRPC
+I added go RPC with protobuf for faster connection between some services. 
+First at all you have to install GRPC from [Protocol Buffers - Google's data interchange format](https://github.com/protocolbuffers/protobuf)
+For this implementation I'm using this libs for generating GRPC files
+
+````bash
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+    go install google.golang.org/grpcServer/cmd/protoc-gen-go-grpcServer@v1.2
+
+	go get google.golang.org/grpcServer
+	go get google.golang.org/protobuf
+````
+
+## Grafana and Loki for observability and monitoring
+
+
 
 ## Build a docker image for m1 microchip
 ```shell
@@ -56,3 +78,4 @@ Creating and editing from [Swagger Editor](https://editor.swagger.io/) and then 
 7. Enable load balancing
 ### Sources
 * [Build a Simple CRUD Go App with CockroachDB and the Go pgx Driver](https://www.cockroachlabs.com/docs/stable/build-a-go-app-with-cockroachdb)
+* [gRPC Quick start with Go](https://grpc.io/docs/languages/go/quickstart/)

@@ -1,55 +1,13 @@
-package main
+package ogeserver
 
 import (
 	"context"
-	crdbpgx "github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
-	"github.com/jackc/pgx/v5"
 	"go-users-service/cmd/ogen/usersvcapi"
 	"go-users-service/internal/core/user"
-	"go-users-service/internal/persistence"
-	"log"
 	"net/http"
-	"os"
 )
 
 //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest -package usersvcapi --target usersvcapi --clean usersvc-oas.yml
-
-func main() {
-	// Read in connection string
-	config, err := pgx.ParseConfig(os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	config.RuntimeParams["application_name"] = "$ docs_simplecrud_gopgx"
-	conn, err := pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close(context.Background())
-
-	err = crdbpgx.ExecuteTx(context.Background(), conn, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		return persistence.InitRepository(context.Background(), tx)
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	cockroachRepository := persistence.New(conn)
-
-	// Create service instance.
-	service := NewHandlers(cockroachRepository)
-	// Create generated server.
-	srv, err := usersvcapi.NewServer(service)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Add prefix to the router
-	mux := http.NewServeMux()
-	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", srv))
-	log.Println("Running in port :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatal(err)
-	}
-}
 
 func NewHandlers(repo user.Repository) usersvcapi.Handler {
 	return userHandlers{

@@ -4,11 +4,12 @@ import (
 	"context"
 	"github.com/cockroachdb/cockroach-go/v2/crdb/crdbpgxv5"
 	"github.com/jackc/pgx/v5"
-	"go-users-service/cmd/plain/handlers"
+	"go-users-service/cmd/grpcserver"
+	ogeserver "go-users-service/cmd/ogen"
 	"go-users-service/internal/persistence"
 	"log"
-	"net/http"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -31,12 +32,28 @@ func main() {
 		log.Fatal(err)
 	}
 	cockroachRepository := persistence.New(conn)
-	userHandlers := handlers.NewUserHandlers(cockroachRepository)
 
-	http.HandleFunc("/user", userHandlers.Handle)
+	wg := sync.WaitGroup{}
+	// TODO: Add failed case with a channel
+	wg.Add(1)
+	go func() {
+		// Start GRPC
+		var grpcServer Server
+		grpcServer = grpcserver.New(cockroachRepository)
+		grpcServer.ListenAndServe("8080")
+		wg.Done()
+	}()
 
-	log.Println("Running in :8080")
-	if err = http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
+	wg.Add(1)
+	go func() {
+		var httpServer Server
+		httpServer = ogeserver.NewServer(cockroachRepository)
+		httpServer.ListenAndServe("8080")
+	}()
+
+	wg.Wait()
+}
+
+type Server interface {
+	ListenAndServe(port string)
 }
