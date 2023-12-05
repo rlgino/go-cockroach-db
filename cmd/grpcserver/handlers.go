@@ -1,13 +1,13 @@
-package grpcserver
+package main
 
 import (
 	"context"
-	"go-users-service/cmd/grpcServer/usersproto"
+	"go-users-service/cmd/grpcserver/usersproto"
 	"go-users-service/internal/core/user"
 	"log"
 )
 
-//go:generate protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/users.proto
+//go:generate protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative usersproto/users.proto
 
 func NewHandlers(repo user.Repository) usersproto.UserServiceServer {
 	return &usersServiceServer{
@@ -36,5 +36,6 @@ func (u *usersServiceServer) SearchUser(ctx context.Context, request *usersproto
 			}, nil
 		}
 	}
+	log.Printf("User with ID %s not found", request.User)
 	return &usersproto.User{}, nil
 }

@@ -1,4 +1,4 @@
-package ogeserver
+package main
 
 import (
 	"context"

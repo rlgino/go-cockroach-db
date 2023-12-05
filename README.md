@@ -29,7 +29,10 @@ Handles the implementation of security measures, such as data encryption, fraud 
 
 * Ports and adapters architecture:
 * Use cases (actions):
-* main and initialization: 
+* main and initialization: I decided to build 3 entry points:
+  * cmd/grpcserver: GRPC server implementation
+  * cmd/plainHTTP: HTTP server built with go sdk tools
+  * cmd/ogen: Built from OGen documentated with OAS contract
 
 ### Plain HTTP server
 For this entrypoint I used `http/net` package for serve HTTP requests, it's a simple way to develop an application in Golang. The `main.go` file is in `cmd/plain`.

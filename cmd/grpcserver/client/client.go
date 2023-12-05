@@ -12,7 +12,7 @@ import (
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.Dial("localhost:8081", opts...)
+	conn, err := grpc.Dial("localhost:3030", opts...)
 	if err != nil {
 		log.Fatalf("fail to dial: %v", err)
 	}
@@ -21,7 +21,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	user, err := client.SearchUser(ctx, &usersproto.SearchRequest{
-		User: "6f35b5b0-1250-4b50-b58a-091d110cd00a",
+		User: "c249e993-9b2d-4b75-b0b6-f462dbf2666e",
 	})
 	if err != nil {
 		log.Fatal(err)

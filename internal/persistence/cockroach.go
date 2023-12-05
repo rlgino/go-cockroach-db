@@ -27,7 +27,9 @@ func New(conn *pgx.Conn) *CockroachRepository {
 	return repo
 }
 
+// InitRepository will init the repository and create every part of the struct
 func InitRepository(ctx context.Context, tx pgx.Tx) error {
+	// TODO: Adding creating data
 	// Dropping existing table if it exists
 	log.Println("Drop existing users table if necessary.")
 	if _, err := tx.Exec(ctx, "DROP TABLE IF EXISTS users"); err != nil {

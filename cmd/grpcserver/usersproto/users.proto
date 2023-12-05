@@ -1,7 +1,9 @@
 syntax = "proto3";
 
 package usersproto;
-option go_package = "grpcServer/users";
+option go_package = "grpcServer/usersproto";
+option java_package="com.rlgino.CardsService.infrastructure.usersproto";
+option java_multiple_files = true;
 
 message User {
   enum ItemStatus {
