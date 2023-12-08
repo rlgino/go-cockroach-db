@@ -8,7 +8,7 @@ RUN go mod download
 # https://docs.docker.com/engine/reference/builder/#copy
 COPY . ./
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /go-users-service-app
+RUN CGO_ENABLED=0 GOOS=linux go build -o /go-users-service-app ./cmd/ogen
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
 # But we can document in the Dockerfile what ports

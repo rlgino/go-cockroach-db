@@ -60,8 +60,16 @@ For this implementation I'm using this libs for generating GRPC files
 ````
 
 ## Grafana and Loki for observability and monitoring
-
-
+1. Install `loki` pluigin in Docker
+```shell
+docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+```
+2. You can run docker compose file and run on docker containers:
+```shell
+docker compose up
+```
+3. Then you can go to http://localhost:3000/ and login using admin/admin as user and password.
+4. So you can go to admin explore logs.
 
 ## Build a docker image for m1 microchip
 ```shell
