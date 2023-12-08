@@ -5,6 +5,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"go-users-service/cmd/ogen/usersvcapi"
 	"go-users-service/internal/core/user"
+	"go-users-service/internal/logging"
 	"go-users-service/internal/persistence"
 	"log"
 	"net/http"
@@ -19,7 +20,7 @@ func main() {
 	defer conn.Close(context.Background())
 
 	// Create service instance.
-	service := NewHandlers(cockroachRepository)
+	service := NewHandlers(cockroachRepository, logging.NewDefaultLogging("go-user-services"))
 	// Create generated server.
 	srv, err := usersvcapi.NewServer(service)
 	if err != nil {

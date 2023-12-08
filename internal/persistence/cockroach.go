@@ -67,7 +67,6 @@ func (repo *CockroachRepository) ListUsers(ctx context.Context) ([]user.Data, er
 		if err := rows.Scan(&id, &userName); err != nil {
 			return nil, err
 		}
-		log.Printf("%s: %s\n", id, userName)
 		ret = append(ret, user.Data{
 			ID:   id,
 			User: userName,
@@ -78,7 +77,6 @@ func (repo *CockroachRepository) ListUsers(ctx context.Context) ([]user.Data, er
 
 func (repo *CockroachRepository) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	// Delete two rows into the "accounts" table.
-	log.Printf("Deleting rows with ID %s", id)
 	if _, err := repo.conn.Exec(ctx,
 		"DELETE FROM users WHERE id = $1", id); err != nil {
 		return err
