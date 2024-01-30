@@ -8,7 +8,7 @@ Microservice responsible for handling user authentication and authorization to a
 ### User Management:
 Handles the creation, updating, and deletion of user accounts, as well as the management of profile information.
 
-### Account and Balance Management:
+### Cards, Account and Balance Management:
 Manages accounts associated with the wallet and performs operations related to the balance, such as balance inquiries, fund loading, and transfers between accounts.
 
 ### Transaction History:

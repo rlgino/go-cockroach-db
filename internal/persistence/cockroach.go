@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -17,19 +18,11 @@ func New(conn *pgx.Conn) *CockroachRepository {
 	repo := &CockroachRepository{
 		conn,
 	}
-	id := uuid.New()
-	log.Println("Using ID ", id)
-	repo.SaveUser(context.Background(), user.Data{
-		ID:       id,
-		User:     "test1",
-		Password: "prueba",
-	})
 	return repo
 }
 
 // InitRepository will init the repository and create every part of the struct
 func InitRepository(ctx context.Context, tx pgx.Tx) error {
-	// TODO: Adding creating data
 	// Dropping existing table if it exists
 	log.Println("Drop existing users table if necessary.")
 	if _, err := tx.Exec(ctx, "DROP TABLE IF EXISTS users"); err != nil {
@@ -39,23 +32,25 @@ func InitRepository(ctx context.Context, tx pgx.Tx) error {
 	// Create the accounts table
 	log.Println("Creating users table.")
 	if _, err := tx.Exec(ctx,
-		"CREATE TABLE users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), userName varchar, password varchar)"); err != nil {
+		"CREATE TABLE users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), firstName varchar, lastName varchar, birthdate varchar, status varchar)"); err != nil {
 		return err
 	}
 	return nil
 }
 
+const dateFormat = "2006-01-02"
+
 func (repo *CockroachRepository) SaveUser(ctx context.Context, user user.Data) error {
 	log.Println("Creating new row...")
 	if _, err := repo.conn.Exec(ctx,
-		"INSERT INTO users (id, userName, password) VALUES ($1, $2, $3)", user.ID, user.User, user.Password); err != nil {
+		"INSERT INTO users (id, firstName, lastName, birthdate, status) VALUES ($1, $2, $3, $4, $5)", user.ID, user.FistName, user.LastName, user.Birthdate.Format(dateFormat), user.Status); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (repo *CockroachRepository) ListUsers(ctx context.Context) ([]user.Data, error) {
-	rows, err := repo.conn.Query(ctx, "SELECT id, userName FROM users")
+	rows, err := repo.conn.Query(ctx, "SELECT id, firstName, lastName, birthdate, status FROM users")
 	if err != nil {
 		return nil, err
 	}
@@ -63,13 +58,20 @@ func (repo *CockroachRepository) ListUsers(ctx context.Context) ([]user.Data, er
 	var ret []user.Data
 	for rows.Next() {
 		var id uuid.UUID
-		var userName string
-		if err := rows.Scan(&id, &userName); err != nil {
+		var firstName string
+		var lastName string
+		var birthdate string
+		var status string
+		if err := rows.Scan(&id, &firstName, &lastName, &birthdate, &status); err != nil {
 			return nil, err
 		}
+		formattedBirthdate, _ := time.Parse(dateFormat, birthdate)
 		ret = append(ret, user.Data{
-			ID:   id,
-			User: userName,
+			ID:        id,
+			FistName:  firstName,
+			LastName:  lastName,
+			Birthdate: formattedBirthdate,
+			Status:    status,
 		})
 	}
 	return ret, nil

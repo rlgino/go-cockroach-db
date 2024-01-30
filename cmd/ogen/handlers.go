@@ -8,6 +8,7 @@ import (
 	"go-users-service/internal/core/logger"
 	"go-users-service/internal/core/user"
 	"net/http"
+	"time"
 )
 
 //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest -package usersvcapi --target usersvcapi --clean usersvc-oas.yml
@@ -48,8 +49,11 @@ func (u userHandlers) ListUsers(ctx context.Context) (usersvcapi.Users, error) {
 	var res = make(usersvcapi.Users, len(users))
 	for i, data := range users {
 		res[i] = usersvcapi.User{
-			ID:   data.ID,
-			Name: data.User,
+			ID:        data.ID,
+			Name:      data.FistName,
+			LastName:  data.LastName,
+			Birthdate: data.Birthdate.Format("2006-01-02"),
+			Status:    usersvcapi.UserStatus(data.Status),
 		}
 	}
 	return res, nil
@@ -57,10 +61,20 @@ func (u userHandlers) ListUsers(ctx context.Context) (usersvcapi.Users, error) {
 
 func (u userHandlers) AddUser(ctx context.Context, req *usersvcapi.User) error {
 	u.logger.Info(fmt.Sprintf("Creating user %v", req), fields)
-	err := u.actions.CreateUser(ctx, user.Data{
-		ID:       req.ID,
-		User:     req.Name,
-		Password: req.Password,
+	birthdate, err := time.Parse("2006-01-02", req.Birthdate)
+	if err != nil {
+		return err
+	}
+	err = req.Status.Validate()
+	if err != nil {
+		return err
+	}
+	err = u.actions.CreateUser(ctx, user.Data{
+		ID:        req.ID,
+		FistName:  req.Name,
+		LastName:  req.LastName,
+		Birthdate: birthdate,
+		Status:    string(req.Status),
 	})
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("Error creating user %v: %v", req, err), fields)

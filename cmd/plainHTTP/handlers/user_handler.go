@@ -54,12 +54,12 @@ func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Reque
 		writeInternalError(res, "Invalid request", err)
 		return
 	}
-	if userToCreate.User == "" {
-		writeBadRequest(res, "User required")
+	if userToCreate.FistName == "" {
+		writeBadRequest(res, "FistName required")
 		return
 	}
-	if userToCreate.Password == "" {
-		writeBadRequest(res, "Password required")
+	if userToCreate.LastName == "" {
+		writeBadRequest(res, "LastName required")
 		return
 	}
 	userToCreate.ID, err = uuid.NewRandom()

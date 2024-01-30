@@ -31,11 +31,11 @@ func (u *usersServiceServer) SearchUser(ctx context.Context, request *usersproto
 		if data.ID.String() == request.User {
 			return &usersproto.User{
 				Id:     data.ID.String(),
-				Name:   data.User,
+				Name:   data.FistName,
 				Status: usersproto.User_ACTIVE,
 			}, nil
 		}
 	}
-	log.Printf("User with ID %s not found", request.User)
+	log.Printf("FistName with ID %s not found", request.User)
 	return &usersproto.User{}, nil
 }

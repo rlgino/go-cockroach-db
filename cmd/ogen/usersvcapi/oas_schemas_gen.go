@@ -5,6 +5,7 @@ package usersvcapi
 import (
 	"fmt"
 
+	"github.com/go-faster/errors"
 	"github.com/google/uuid"
 )
 
@@ -62,9 +63,11 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 
 // Ref: #/components/schemas/User
 type User struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
-	Password string    `json:"password"`
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	LastName  string     `json:"last_name"`
+	Birthdate string     `json:"birthdate"`
+	Status    UserStatus `json:"status"`
 }
 
 // GetID returns the value of ID.
@@ -77,9 +80,19 @@ func (s *User) GetName() string {
 	return s.Name
 }
 
-// GetPassword returns the value of Password.
-func (s *User) GetPassword() string {
-	return s.Password
+// GetLastName returns the value of LastName.
+func (s *User) GetLastName() string {
+	return s.LastName
+}
+
+// GetBirthdate returns the value of Birthdate.
+func (s *User) GetBirthdate() string {
+	return s.Birthdate
+}
+
+// GetStatus returns the value of Status.
+func (s *User) GetStatus() UserStatus {
+	return s.Status
 }
 
 // SetID sets the value of ID.
@@ -92,9 +105,60 @@ func (s *User) SetName(val string) {
 	s.Name = val
 }
 
-// SetPassword sets the value of Password.
-func (s *User) SetPassword(val string) {
-	s.Password = val
+// SetLastName sets the value of LastName.
+func (s *User) SetLastName(val string) {
+	s.LastName = val
+}
+
+// SetBirthdate sets the value of Birthdate.
+func (s *User) SetBirthdate(val string) {
+	s.Birthdate = val
+}
+
+// SetStatus sets the value of Status.
+func (s *User) SetStatus(val UserStatus) {
+	s.Status = val
+}
+
+type UserStatus string
+
+const (
+	UserStatusACTIVE   UserStatus = "ACTIVE"
+	UserStatusINACTIVE UserStatus = "INACTIVE"
+)
+
+// AllValues returns all UserStatus values.
+func (UserStatus) AllValues() []UserStatus {
+	return []UserStatus{
+		UserStatusACTIVE,
+		UserStatusINACTIVE,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s UserStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case UserStatusACTIVE:
+		return []byte(s), nil
+	case UserStatusINACTIVE:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *UserStatus) UnmarshalText(data []byte) error {
+	switch UserStatus(data) {
+	case UserStatusACTIVE:
+		*s = UserStatusACTIVE
+		return nil
+	case UserStatusINACTIVE:
+		*s = UserStatusINACTIVE
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type Users []User

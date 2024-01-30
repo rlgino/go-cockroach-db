@@ -13,7 +13,9 @@ message User {
 
   string id = 1;
   string name = 2;
-  ItemStatus status = 3;
+  string lastName = 3;
+  string datetime = 4;
+  ItemStatus status = 5;
 }
 
 message SearchRequest {

@@ -98,7 +98,9 @@ components:
       required:
         - id
         - name
-        - password
+        - last_name
+        - birthdate
+        - status
       properties:
         id:
           type: string
@@ -106,10 +108,19 @@ components:
           example: 95854717-f395-455e-b610-95bd85d9adb1
         name:
           type: string
-          example: test-user
-        password:
+          example: test
+        last_name:
           type: string
-          example: mySecretPassword
+          example: mylastname
+        birthdate:
+          type: string
+          example: 1995-04-30
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          example: ACTIVE
       type: object
     Error:
       description: Represents error object
