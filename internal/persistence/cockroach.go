@@ -49,31 +49,15 @@ func (repo *CockroachRepository) SaveUser(ctx context.Context, user user.Data) e
 	return nil
 }
 
-func (repo *CockroachRepository) ListUsers(ctx context.Context) ([]user.Data, error) {
-	rows, err := repo.conn.Query(ctx, "SELECT id, firstName, lastName, birthdate, status FROM users")
-	if err != nil {
-		return nil, err
+func (repo *CockroachRepository) FindUserByID(ctx context.Context, id uuid.UUID) (user.Data, error) {
+	row := repo.conn.QueryRow(ctx, "SELECT id, firstName, lastName, birthdate, status FROM users where id = $1", id.String())
+	var ret user.Data
+	var birthdate string
+	if err := row.Scan(&ret.ID, &ret.FistName, &ret.LastName, &birthdate, &ret.Status); err != nil {
+		return user.Data{}, err
 	}
-	defer rows.Close()
-	var ret []user.Data
-	for rows.Next() {
-		var id uuid.UUID
-		var firstName string
-		var lastName string
-		var birthdate string
-		var status string
-		if err := rows.Scan(&id, &firstName, &lastName, &birthdate, &status); err != nil {
-			return nil, err
-		}
-		formattedBirthdate, _ := time.Parse(dateFormat, birthdate)
-		ret = append(ret, user.Data{
-			ID:        id,
-			FistName:  firstName,
-			LastName:  lastName,
-			Birthdate: formattedBirthdate,
-			Status:    status,
-		})
-	}
+	formattedBirthdate, _ := time.Parse(dateFormat, birthdate)
+	ret.Birthdate = formattedBirthdate
 	return ret, nil
 }
 

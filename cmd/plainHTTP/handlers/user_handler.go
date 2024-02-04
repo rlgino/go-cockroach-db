@@ -77,12 +77,18 @@ func (handler *UserHandlers) createUser(res http.ResponseWriter, req *http.Reque
 }
 
 func (handler *UserHandlers) listUsers(res http.ResponseWriter, req *http.Request) {
-	users, err := handler.actions.ListUsers(req.Context())
+	var userToDelete user.Data
+	err := json.NewDecoder(req.Body).Decode(&userToDelete)
+	if err != nil {
+		writeInternalError(res, "Invalid request", err)
+		return
+	}
+	user, err := handler.actions.FindUser(req.Context(), userToDelete.ID)
 	if err != nil {
 		writeInternalError(res, "error listing user", err)
 		return
 	}
-	writeSuccess(res, users)
+	writeSuccess(res, user)
 
 }
 

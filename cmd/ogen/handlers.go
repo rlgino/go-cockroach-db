@@ -39,24 +39,20 @@ func (u userHandlers) DeleteUser(ctx context.Context, params usersvcapi.DeleteUs
 	return nil
 }
 
-func (u userHandlers) ListUsers(ctx context.Context) (usersvcapi.Users, error) {
-	u.logger.Info("Listing users", fields)
-	users, err := u.actions.ListUsers(ctx)
+func (u userHandlers) FindUser(ctx context.Context, params usersvcapi.FindUserParams) (*usersvcapi.User, error) {
+	u.logger.Info("Find user "+params.UserID.String(), fields)
+	data, err := u.actions.FindUser(ctx, params.UserID)
 	if err != nil {
 		u.logger.Error(fmt.Sprintf("Error Listing users: %v", err), fields)
 		return nil, err
 	}
-	var res = make(usersvcapi.Users, len(users))
-	for i, data := range users {
-		res[i] = usersvcapi.User{
-			ID:        data.ID,
-			Name:      data.FistName,
-			LastName:  data.LastName,
-			Birthdate: data.Birthdate.Format("2006-01-02"),
-			Status:    usersvcapi.UserStatus(data.Status),
-		}
-	}
-	return res, nil
+	return &usersvcapi.User{
+		ID:        data.ID,
+		Name:      data.FistName,
+		LastName:  data.LastName,
+		Birthdate: data.Birthdate.Format("2006-01-02"),
+		Status:    usersvcapi.UserStatus(data.Status),
+	}, nil
 }
 
 func (u userHandlers) AddUser(ctx context.Context, req *usersvcapi.User) error {

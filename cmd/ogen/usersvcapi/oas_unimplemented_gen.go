@@ -31,12 +31,12 @@ func (UnimplementedHandler) DeleteUser(ctx context.Context, params DeleteUserPar
 	return ht.ErrNotImplemented
 }
 
-// ListUsers implements listUsers operation.
+// FindUser implements findUser operation.
 //
-// List the already stored users.
+// Find a stored user.
 //
-// GET /users
-func (UnimplementedHandler) ListUsers(ctx context.Context) (r Users, _ error) {
+// GET /user/{userID}
+func (UnimplementedHandler) FindUser(ctx context.Context, params FindUserParams) (r *User, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -35,12 +35,12 @@ type Invoker interface {
 	//
 	// DELETE /user/{userID}
 	DeleteUser(ctx context.Context, params DeleteUserParams) error
-	// ListUsers invokes listUsers operation.
+	// FindUser invokes findUser operation.
 	//
-	// List the already stored users.
+	// Find a stored user.
 	//
-	// GET /users
-	ListUsers(ctx context.Context) (Users, error)
+	// GET /user/{userID}
+	FindUser(ctx context.Context, params FindUserParams) (*User, error)
 }
 
 // Client implements OAS client.
@@ -260,21 +260,21 @@ func (c *Client) sendDeleteUser(ctx context.Context, params DeleteUserParams) (r
 	return result, nil
 }
 
-// ListUsers invokes listUsers operation.
+// FindUser invokes findUser operation.
 //
-// List the already stored users.
+// Find a stored user.
 //
-// GET /users
-func (c *Client) ListUsers(ctx context.Context) (Users, error) {
-	res, err := c.sendListUsers(ctx)
+// GET /user/{userID}
+func (c *Client) FindUser(ctx context.Context, params FindUserParams) (*User, error) {
+	res, err := c.sendFindUser(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListUsers(ctx context.Context) (res Users, err error) {
+func (c *Client) sendFindUser(ctx context.Context, params FindUserParams) (res *User, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("listUsers"),
+		otelogen.OperationID("findUser"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/users"),
+		semconv.HTTPRouteKey.String("/user/{userID}"),
 	}
 
 	// Run stopwatch.
@@ -289,7 +289,7 @@ func (c *Client) sendListUsers(ctx context.Context) (res Users, err error) {
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "ListUsers",
+	ctx, span := c.cfg.Tracer.Start(ctx, "FindUser",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -306,8 +306,26 @@ func (c *Client) sendListUsers(ctx context.Context) (res Users, err error) {
 
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/users"
+	var pathParts [2]string
+	pathParts[0] = "/user/"
+	{
+		// Encode "userID" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "userID",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UUIDToString(params.UserID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -324,7 +342,7 @@ func (c *Client) sendListUsers(ctx context.Context) (res Users, err error) {
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeListUsersResponse(resp)
+	result, err := decodeFindUserResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

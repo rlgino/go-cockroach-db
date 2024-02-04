@@ -116,7 +116,7 @@ func decodeDeleteUserResponse(resp *http.Response) (res *DeleteUserOK, _ error) 
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodeListUsersResponse(resp *http.Response) (res Users, _ error) {
+func decodeFindUserResponse(resp *http.Response) (res *User, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -132,7 +132,7 @@ func decodeListUsersResponse(resp *http.Response) (res Users, _ error) {
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response Users
+			var response User
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -158,7 +158,7 @@ func decodeListUsersResponse(resp *http.Response) (res Users, _ error) {
 			}(); err != nil {
 				return res, errors.Wrap(err, "validate")
 			}
-			return response, nil
+			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}

@@ -20,12 +20,12 @@ type Handler interface {
 	//
 	// DELETE /user/{userID}
 	DeleteUser(ctx context.Context, params DeleteUserParams) error
-	// ListUsers implements listUsers operation.
+	// FindUser implements findUser operation.
 	//
-	// List the already stored users.
+	// Find a stored user.
 	//
-	// GET /users
-	ListUsers(ctx context.Context) (Users, error)
+	// GET /user/{userID}
+	FindUser(ctx context.Context, params FindUserParams) (*User, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

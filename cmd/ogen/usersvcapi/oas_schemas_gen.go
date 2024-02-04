@@ -160,5 +160,3 @@ func (s *UserStatus) UnmarshalText(data []byte) error {
 		return errors.Errorf("invalid value: %q", data)
 	}
 }
-
-type Users []User

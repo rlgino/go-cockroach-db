@@ -66,21 +66,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
-  /users:
     get:
       tags:
         - user
-      summary: List stored users
-      description: List the already stored users
-      operationId: listUsers
+      summary: Find an user by his id
+      description: Find a stored user
+      operationId: findUser
+      parameters:
+        - name: userID
+          in: path
+          description: ID of user to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Users"
+                $ref: "#/components/schemas/User"
         default:
           description: The default operation result will be an error
           content:

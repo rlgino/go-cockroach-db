@@ -13,7 +13,7 @@ func NewActions(repo Repository) Actions {
 type Actions interface {
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	CreateUser(ctx context.Context, userToCreate Data) error
-	ListUsers(ctx context.Context) ([]Data, error)
+	FindUser(ctx context.Context, id uuid.UUID) (Data, error)
 }
 
 type actions struct {
@@ -37,10 +37,10 @@ func (actions *actions) CreateUser(ctx context.Context, userToCreate Data) error
 
 }
 
-func (actions *actions) ListUsers(ctx context.Context) ([]Data, error) {
-	users, err := actions.Repo.ListUsers(ctx)
+func (actions *actions) FindUser(ctx context.Context, id uuid.UUID) (Data, error) {
+	users, err := actions.Repo.FindUserByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("error listing user")
+		return Data{}, fmt.Errorf("error find user %s: %v", id.String(), err)
 	}
 	return users, nil
 }

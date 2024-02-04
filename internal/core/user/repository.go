@@ -7,6 +7,6 @@ import (
 
 type Repository interface {
 	SaveUser(ctx context.Context, user Data) error
-	ListUsers(ctx context.Context) ([]Data, error)
+	FindUserByID(ctx context.Context, id uuid.UUID) (Data, error)
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 }

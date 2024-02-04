@@ -88,29 +88,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						s.handleDeleteUserRequest([1]string{
 							args[0],
 						}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "DELETE")
-					}
-
-					return
-				}
-
-				elem = origElem
-			case 's': // Prefix: "s"
-				origElem := elem
-				if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
 					case "GET":
-						s.handleListUsersRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleFindUserRequest([1]string{
+							args[0],
+						}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "GET")
+						s.notAllowed(w, r, "DELETE,GET")
 					}
 
 					return
@@ -247,30 +230,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.args = args
 						r.count = 1
 						return r, true
-					default:
-						return
-					}
-				}
-
-				elem = origElem
-			case 's': // Prefix: "s"
-				origElem := elem
-				if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
-					elem = elem[l:]
-				} else {
-					break
-				}
-
-				if len(elem) == 0 {
-					switch method {
 					case "GET":
-						// Leaf: ListUsers
-						r.name = "ListUsers"
-						r.summary = "List stored users"
-						r.operationID = "listUsers"
-						r.pathPattern = "/users"
+						// Leaf: FindUser
+						r.name = "FindUser"
+						r.summary = "Find an user by his id"
+						r.operationID = "findUser"
+						r.pathPattern = "/user/{userID}"
 						r.args = args
-						r.count = 0
+						r.count = 1
 						return r, true
 					default:
 						return

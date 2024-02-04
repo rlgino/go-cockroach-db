@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"go-users-service/cmd/grpcserver/usersproto"
 	"go-users-service/internal/core/user"
-	"log"
 )
 
 //go:generate protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative usersproto/users.proto
@@ -22,20 +22,23 @@ type usersServiceServer struct {
 }
 
 func (u *usersServiceServer) SearchUser(ctx context.Context, request *usersproto.SearchRequest) (*usersproto.User, error) {
-	users, err := u.actions.ListUsers(ctx)
+	id, err := uuid.Parse(request.User)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Searching in %d records", len(users))
-	for _, data := range users {
-		if data.ID.String() == request.User {
-			return &usersproto.User{
-				Id:     data.ID.String(),
-				Name:   data.FistName,
-				Status: usersproto.User_ACTIVE,
-			}, nil
-		}
+	user, err := u.actions.FindUser(ctx, id)
+	if err != nil {
+		return nil, err
 	}
-	log.Printf("FistName with ID %s not found", request.User)
-	return &usersproto.User{}, nil
+	status := usersproto.User_ACTIVE
+	if user.Status == "INACTIVE" {
+		status = usersproto.User_INACTIVE
+	}
+	return &usersproto.User{
+		Id:       user.ID.String(),
+		Name:     user.FistName,
+		LastName: user.LastName,
+		Datetime: user.Birthdate.Format("2006-01-02"),
+		Status:   status,
+	}, nil
 }
