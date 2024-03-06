@@ -30,7 +30,10 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/api/v1/", http.StripPrefix("/api/v1", srv))
 
-	port := "8080"
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
 	log.Println("Running in port ", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
 		log.Fatal(err)

@@ -76,6 +76,9 @@ docker compose up
  docker buildx build --platform linux/amd64 -t <api-tag> .
 ```
 
+## Deploying gRPC server into Cloud Run
+[Google cloud: Using gRPC](https://cloud.google.com/run/docs/triggering/grpc)
+
 ## Steps
 1. Create a minimum app
 2. Connect with DB (In my case I'm using Cockroach DB with Postgres)

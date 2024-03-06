@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5"
 	"go-users-service/cmd/grpcserver/usersproto"
 	"go-users-service/internal/core/user"
@@ -22,17 +21,23 @@ func main() {
 
 	// Start GRPC
 	var opts []grpc.ServerOption
+	log.Printf("grpc-ping: starting server...")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3030"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	listener, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Fatalf("net.Listen: %v", err)
+	}
+
 	grpcServer := grpc.NewServer(opts...)
 	usersproto.RegisterUserServiceServer(grpcServer, NewHandlers(cockroachRepository))
-
-	port := "3030"
-	log.Println("Listening GRPC in ", port)
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", port))
-	if err != nil {
-		log.Printf("failed to listen: %v", err)
-	}
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Println(err)
+	if err = grpcServer.Serve(listener); err != nil {
+		log.Fatal(err)
 	}
 }
 
